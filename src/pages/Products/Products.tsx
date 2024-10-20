@@ -65,7 +65,7 @@ export default function Products() {
           </DropdownMenu>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {items.map((product:Product) => (
+          {items.slice(0,32).map((product:Product) => (
             <Card key={product.id} className="overflow-hidden">
               <CardHeader className="p-0">
                 <img
