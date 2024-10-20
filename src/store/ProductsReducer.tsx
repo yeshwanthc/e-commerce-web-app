@@ -11,7 +11,7 @@ export const fetchProducts = createAsyncThunk(
 
 const productsSlice = createSlice({
   name: 'products',
-  initialState: { items: [], status: 'idle', error: null },
+  initialState: { items: [], status: 'idle', error: null as string | null },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -24,7 +24,7 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message;
+        state.error = action.error?.message || null;
       });
   },
 });

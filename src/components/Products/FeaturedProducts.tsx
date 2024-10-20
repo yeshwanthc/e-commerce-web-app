@@ -50,11 +50,11 @@ export default function FeaturedProducts() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
             {items.slice(0, 12).map((product: Product) => (
               <Card key={product.id} className="overflow-hidden">
-                <CardHeader className="p-0">
+                <CardHeader className="p-5">
                   <img
                     src={product.images?.[1]}
                     alt={product.title}
-                    className="w-full h-96 object-cover"
+                    className="w-full h-72 object-cover rounded-lg"
                     width={600}
                     height={200}
                   />
