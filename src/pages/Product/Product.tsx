@@ -1,12 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from "react-redux";
 import { Star, Minus, Plus, ShoppingCart, Heart, Share2, ChevronRight } from 'lucide-react'
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { RootState, AppDispatch } from "../../store/store";
+import { fetchProducts } from "../../store/ProductsReducer";
+
 
 const product = {
   id: 1,
@@ -63,11 +66,36 @@ const relatedProducts = [
     image: "/placeholder.svg?height=200&width=200",
   },
 ]
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  image: string;
+  images?: string[];
+}
 
 export default function Product() {
   const [mainImage, setMainImage] = useState(product.images[0])
   const [quantity, setQuantity] = useState(1)
   const [selectedColor, setSelectedColor] = useState(product.colors[0])
+  const dispatch = useDispatch<AppDispatch>();
+  const { items, status, error } = useSelector(
+    (state: RootState) => state.products
+  );
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchProducts());
+    }
+  }, [status, dispatch]);
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (status === "failed") {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -186,22 +214,18 @@ export default function Product() {
       <section className="mt-16">
         <h2 className="text-2xl font-bold mb-6">Related Products</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {relatedProducts.map((product) => (
+          {items.slice(0,4).map((product:Product) => (
             <Card key={product.id}>
               <CardHeader className="p-0">
                 <img
-                  src={product.image}
-                  alt={product.name}
+                  src={product.images?.[1]}
+                  alt={product.title}
                   className="w-full h-48 object-cover"
                 />
               </CardHeader>
               <CardContent className="p-4">
-                <CardTitle className="text-lg font-semibold">{product.name}</CardTitle>
-                <div className="flex items-center mt-2">
-                  <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                  <span className="ml-1 text-sm font-medium">{product.rating}</span>
-                  <span className="ml-1 text-sm text-gray-500">({product.reviews} reviews)</span>
-                </div>
+                <CardTitle className="text-lg font-semibold">{product.title}</CardTitle>
+              
                 <p className="mt-2 font-bold">${product.price.toFixed(2)}</p>
               </CardContent>
               <CardFooter className="p-4">

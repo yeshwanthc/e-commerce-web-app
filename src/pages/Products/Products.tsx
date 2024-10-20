@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { Star, ShoppingCart, Heart, ChevronDown } from 'lucide-react'
-
+import { useState,useEffect } from 'react'
+import { ShoppingCart, Heart, ChevronDown } from 'lucide-react'
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -11,79 +11,38 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { RootState, AppDispatch } from "../../store/store";
+import { fetchProducts } from "../../store/ProductsReducer";
 
-const products = [
-  {
-    id: 1,
-    name: "Premium Wireless Headphones",
-    price: 199.99,
-    rating: 4.8,
-    reviews: 1024,
-    image: "/placeholder.svg?height=300&width=300",
-    category: "Electronics",
-  },
-  {
-    id: 2,
-    name: "Ergonomic Office Chair",
-    price: 299.99,
-    rating: 4.7,
-    reviews: 856,
-    image: "/placeholder.svg?height=300&width=300",
-    category: "Furniture",
-  },
-  {
-    id: 3,
-    name: "Smart Fitness Tracker",
-    price: 99.99,
-    rating: 4.6,
-    reviews: 2048,
-    image: "/placeholder.svg?height=300&width=300",
-    category: "Wearables",
-  },
-  {
-    id: 4,
-    name: "Gourmet Coffee Maker",
-    price: 149.99,
-    rating: 4.9,
-    reviews: 512,
-    image: "/placeholder.svg?height=300&width=300",
-    category: "Appliances",
-  },
-  {
-    id: 5,
-    name: "Lightweight Hiking Backpack",
-    price: 79.99,
-    rating: 4.5,
-    reviews: 768,
-    image: "/placeholder.svg?height=300&width=300",
-    category: "Outdoor",
-  },
-  {
-    id: 6,
-    name: "Professional DSLR Camera",
-    price: 1299.99,
-    rating: 4.8,
-    reviews: 384,
-    image: "/placeholder.svg?height=300&width=300",
-    category: "Electronics",
-  },
-]
-
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  image: string;
+  images?: string[];
+}
 export default function Products() {
   const [sortBy, setSortBy] = useState('popularity')
 
-  const sortedProducts = [...products].sort((a, b) => {
-    switch (sortBy) {
-      case 'price-low':
-        return a.price - b.price
-      case 'price-high':
-        return b.price - a.price
-      case 'rating':
-        return b.rating - a.rating
-      default:
-        return b.reviews - a.reviews
+ 
+  const dispatch = useDispatch<AppDispatch>();
+  const { items, status, error } = useSelector(
+    (state: RootState) => state.products
+  );
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchProducts());
     }
-  })
+  }, [status, dispatch]);
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (status === "failed") {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-50">
@@ -106,27 +65,25 @@ export default function Products() {
           </DropdownMenu>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {sortedProducts.map((product) => (
+          {items.map((product:Product) => (
             <Card key={product.id} className="overflow-hidden">
               <CardHeader className="p-0">
                 <img
-                  src={product.image}
-                  alt={product.name}
+                  src={product.images?.[1]|| product.images?.[0]}
+                  alt={product.title}
                   className="w-full h-48 object-cover"
                   width={300}
                   height={200}
                 />
-              </CardHeader>
+              </CardHeader> 
               <CardContent className="p-4">
-                <CardTitle className="text-lg font-semibold line-clamp-2">{product.name}</CardTitle>
-                <p className="text-sm text-gray-500 mt-1">{product.category}</p>
-                <div className="flex items-center mt-2">
-                  <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                  <span className="ml-1 text-sm font-medium">{product.rating}</span>
-                  <span className="ml-1 text-sm text-gray-500">({product.reviews} reviews)</span>
-                </div>
-                <p className="mt-2 font-bold">${product.price.toFixed(2)}</p>
-              </CardContent>
+                  <CardTitle className="text-lg font-semibold">
+                    {product.title}
+                  </CardTitle>
+                  <p className="text-sm text-gray-500 mt-2">
+                    ${product.price.toFixed(2)}
+                  </p>
+                </CardContent>        
               <CardFooter className="p-4 flex justify-between">
                 <Button className="w-full mr-2">
                   <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
