@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchProducts } from '../../store/ProductsReducer';
-import { RootState, AppDispatch } from '../../store/store';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../../store/ProductsReducer";
+import { RootState, AppDispatch } from "../../store/store";
 import {
   Card,
   CardContent,
@@ -17,66 +17,66 @@ interface Product {
   title: string;
   price: number;
   image: string;
-  images?: string[]; 
+  images?: string[];
 }
 
 export default function FeaturedProducts() {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, status, error } = useSelector((state: RootState) => state.products);
+  const { items, status, error } = useSelector(
+    (state: RootState) => state.products
+  );
 
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchProducts());
     }
   }, [status, dispatch]);
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return <div>Loading...</div>;
   }
 
-  if (status === 'failed') {
+  if (status === "failed") {
     return <div>Error: {error}</div>;
   }
-
 
   return (
     <div>
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100">
-      <div className="container px-4 md:px-6">
-        <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">
-          Featured Products
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {items.map((product: Product) => (
-            <Card key={product.id} className="overflow-hidden">
-              <CardHeader className="p-0">
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  className="w-full h-48 object-contain"
-                  width={300}
-                  height={200}
-                />
-              </CardHeader>
-              <CardContent className="p-4">
-                <CardTitle className="text-lg font-semibold">
-                  {product.title}
-                </CardTitle>
-                <p className="text-sm text-gray-500 mt-2">
-                  ${product.price.toFixed(2)}
-                </p>
-              </CardContent>
-              <CardFooter className="p-4">
-                <Button className="w-full">
-                  <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+        <div className="container px-4 md:px-6">
+          <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">
+            Featured Products
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+            {items.slice(0, 12).map((product: Product) => (
+              <Card key={product.id} className="overflow-hidden">
+                <CardHeader className="p-0">
+                  <img
+                    src={product.images?.[1]}
+                    alt={product.title}
+                    className="w-full h-96 object-cover"
+                    width={600}
+                    height={200}
+                  />
+                </CardHeader>
+                <CardContent className="p-4">
+                  <CardTitle className="text-lg font-semibold">
+                    {product.title}
+                  </CardTitle>
+                  <p className="text-sm text-gray-500 mt-2">
+                    ${product.price.toFixed(2)}
+                  </p>
+                </CardContent>
+                <CardFooter className="p-4">
+                  <Button className="w-full">
+                    <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
         </div>
-     
-      </div>
-    </section>
+      </section>
     </div>
   );
 }
