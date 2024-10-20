@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
+import Loading from "../Loading";
 
 interface Product {
   id: number;
@@ -33,7 +34,7 @@ export default function FeaturedProducts() {
   }, [status, dispatch]);
 
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (status === "failed") {
