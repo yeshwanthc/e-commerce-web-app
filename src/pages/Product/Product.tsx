@@ -1,14 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  Star,
-  Minus,
-  Plus,
-  ShoppingCart,
-  Heart,
-  Share2,
   ChevronRight,
 } from "lucide-react";
 
@@ -38,8 +32,6 @@ export default function Product() {
     (state: RootState) => state.products
   );
 
-  const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState("");
 
   useEffect(() => {
     if (status === "idle") {
